@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  zido:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY
+        - SUPABASE_SERVICE_ROLE_KEY
+        - NEXT_PUBLIC_GITEA_CLIENT_ID
+        - NEXT_PUBLIC_GITEA_CLIENT_SECRET
+        - NEXT_PUBLIC_GITEA_URL
+        - NEXT_PUBLIC_APP_URL
+    ports:
+      - "3000:3000"
+    restart: always

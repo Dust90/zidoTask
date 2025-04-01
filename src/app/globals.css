@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 249, 250, 251;
+  --background-end-rgb: 243, 244, 246;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    135deg,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
+}
+
+/* 视图切换样式 */
+.view-container {
+  display: none;
+}
+
+.view-container.active {
+  display: block;
+}
+
+.tab-active {
+  @apply bg-white text-primary-600 shadow-sm;
+}
+
+/* 列表视图样式 */
+.list-task {
+  @apply border-l-4 border-transparent transition-all duration-200;
+}
+
+.list-task.high {
+  @apply border-l-red-500;
+}
+
+.list-task.medium {
+  @apply border-l-amber-500;
+}
+
+.list-task.low {
+  @apply border-l-emerald-500;
+}
+
+.list-task.completed {
+  @apply opacity-70;
+}
+
+/* 日历视图样式 */
+.calendar-grid {
+  @apply grid grid-cols-7 gap-2;
+}
+
+.calendar-day {
+  @apply aspect-square relative;
+}
+
+.calendar-day.today {
+  @apply bg-primary-600 text-white;
+}
+
+.calendar-day.has-events::after {
+  content: '';
+  @apply absolute bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary-600;
+}
+
+.calendar-day.today.has-events::after {
+  @apply bg-white;
+}
+
+/* 看板视图样式 */
+.kanban-column {
+  @apply min-h-[500px];
+}
+
+.kanban-item {
+  @apply transition-all duration-200;
+}
+
+.kanban-item.dragging {
+  @apply opacity-50 scale-[0.98] shadow-md;
+}
+
+.kanban-column.dropzone {
+  @apply bg-primary-100/20 border border-dashed border-primary-300;
+}
+
+/* 统计卡片样式 */
+.stat-card {
+  @apply transition-transform duration-200 hover:-translate-y-1;
+}
