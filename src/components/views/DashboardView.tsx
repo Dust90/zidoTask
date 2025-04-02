@@ -63,17 +63,16 @@ interface Project {
 // 状态选项
 const statusOptions: SelectOption[] = [
   { value: 'todo', label: '待办' },
-  { value: 'in_progress', label: '进行中' },
-  { value: 'done', label: '已完成' },
+  { value: 'in-progress', label: '进行中' },
+  { value: 'completed', label: '已完成' },
   { value: 'cancelled', label: '已取消' }
 ];
 
 // 优先级选项
 const priorityOptions: SelectOption[] = [
   { value: 'low', label: '低' },
-  { value: 'normal', label: '中' },
-  { value: 'high', label: '高' },
-  { value: 'urgent', label: '紧急' }
+  { value: 'medium', label: '中' },
+  { value: 'high', label: '高' }
 ];
 
 const StatCard = ({ title, count, icon: Icon, color, bgColor }: StatCardProps) => {

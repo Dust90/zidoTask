@@ -9,6 +9,7 @@ SERVER_PASSWORD=""                 # 服务器密码（可选）
 USE_KEY=false                      # 是否使用 SSH 密钥
 KEY_PATH=""                        # SSH 密钥路径
 ENV_FILE=".env.production"         # 默认环境变量文件
+REMOVE_EXISTING=true               # 是否删除已存在的目标目录
 
 # 显示帮助信息
 show_help() {
@@ -22,6 +23,7 @@ show_help() {
     echo "  -k, --key PATH      使用 SSH 密钥文件进行认证"
     echo "  -w, --password PWD  使用密码进行认证（不安全，仅用于测试）"
     echo "  -e, --env FILE      指定环境变量文件 (默认: $ENV_FILE)"
+    echo "  --no-remove         不删除已存在的目标目录"
     echo "  --help              显示此帮助信息"
     echo ""
     echo "示例:"
@@ -63,6 +65,10 @@ while [[ $# -gt 0 ]]; do
         -e|--env)
             ENV_FILE="$2"
             shift 2
+            ;;
+        --no-remove)
+            REMOVE_EXISTING=false
+            shift
             ;;
         --help)
             show_help
@@ -121,26 +127,23 @@ ENV_ARGS="$ENV_ARGS\nNODE_ENV=production"
 echo "环境变量已准备好，将在部署时使用"
 
 # 确认部署信息
-echo "========== 部署信息 =========="
+echo "============================================"
+echo "ZidoTask 部署脚本"
+echo "============================================"
 echo "服务器: $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
 echo "部署目录: $SERVER_DIR"
 echo "环境变量文件: $ENV_FILE"
-if $USE_KEY; then
-    echo "认证方式: SSH 密钥"
-elif [ ! -z "$SERVER_PASSWORD" ]; then
-    echo "认证方式: 密码"
-else
-    echo "认证方式: 标准 SSH"
+if $REMOVE_EXISTING; then
+    echo "注意: 将删除目标目录后重新部署"
 fi
-echo "============================"
-echo ""
+echo "============================================"
 
 # 确认部署
-read -p "确认以上信息并继续部署? (y/n): " -n 1 -r
+read -p "确认部署? (y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "部署已取消"
-    exit 1
+    exit 0
 fi
 
 # 检查 SSH 连接
@@ -160,6 +163,17 @@ fi
 
 # 准备远程部署目录
 echo "准备远程部署目录..."
+if $REMOVE_EXISTING; then
+    echo "删除现有目标目录..."
+    if $USE_KEY; then
+        ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST "if [ -d \"$SERVER_DIR\" ]; then rm -rf \"$SERVER_DIR\"; fi"
+    elif [ ! -z "$SERVER_PASSWORD" ]; then
+        sshpass -p "$SERVER_PASSWORD" ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST "if [ -d \"$SERVER_DIR\" ]; then rm -rf \"$SERVER_DIR\"; fi"
+    else
+        ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST "if [ -d \"$SERVER_DIR\" ]; then rm -rf \"$SERVER_DIR\"; fi"
+    fi
+fi
+
 if $USE_KEY; then
     ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST "mkdir -p $SERVER_DIR"
 elif [ ! -z "$SERVER_PASSWORD" ]; then
